@@ -1,0 +1,218 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Base theme colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  /* Chart colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  
+  /* Educational theme colors */
+  --color-edu-blue: var(--edu-blue);
+  --color-edu-blue-light: var(--edu-blue-light);
+  --color-edu-green: var(--edu-green);
+  --color-edu-green-light: var(--edu-green-light);
+  --color-edu-orange: var(--edu-orange);
+  --color-edu-orange-light: var(--edu-orange-light);
+}
+
+:root {
+  --radius: 0.5rem;
+  
+  /* Base colors using OKLCH */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.15 0.01 20);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.01 20);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.01 20);
+  --primary: oklch(0.6 0.25 225);
+  --primary-foreground: oklch(0.99 0.005 225);
+  --secondary: oklch(0.96 0.01 60);
+  --secondary-foreground: oklch(0.2 0.02 24);
+  --muted: oklch(0.96 0.01 60);
+  --muted-foreground: oklch(0.5 0.01 25);
+  --accent: oklch(0.96 0.01 60);
+  --accent-foreground: oklch(0.2 0.02 24);
+  --destructive: oklch(0.65 0.2 15);
+  --destructive-foreground: oklch(0.98 0.01 60);
+  --border: oklch(0.9 0.01 20);
+  --input: oklch(0.9 0.01 20);
+  --ring: oklch(0.15 0.01 20);
+  
+  /* Chart colors */
+  --chart-1: oklch(0.6 0.25 225);
+  --chart-2: oklch(0.65 0.15 160);
+  --chart-3: oklch(0.55 0.2 120);
+  --chart-4: oklch(0.7 0.2 45);
+  --chart-5: oklch(0.75 0.18 15);
+  
+  /* Educational theme colors using OKLCH */
+  --edu-blue: oklch(0.6 0.25 225);
+  --edu-blue-light: oklch(0.95 0.05 225);
+  --edu-green: oklch(0.55 0.15 135);
+  --edu-green-light: oklch(0.95 0.03 135);
+  --edu-orange: oklch(0.7 0.18 45);
+  --edu-orange-light: oklch(0.97 0.03 45);
+}
+
+.dark {
+  /* Dark mode colors using OKLCH */
+  --background: oklch(0.08 0.005 240);
+  --foreground: oklch(0.98 0.005 0);
+  --card: oklch(0.12 0.01 240);
+  --card-foreground: oklch(0.98 0.005 0);
+  --popover: oklch(0.12 0.01 240);
+  --popover-foreground: oklch(0.98 0.005 0);
+  --primary: oklch(0.6 0.25 225);
+  --primary-foreground: oklch(0.99 0.005 225);
+  --secondary: oklch(0.18 0.01 240);
+  --secondary-foreground: oklch(0.98 0.005 0);
+  --muted: oklch(0.18 0.01 240);
+  --muted-foreground: oklch(0.65 0.01 240);
+  --accent: oklch(0.18 0.01 240);
+  --accent-foreground: oklch(0.98 0.005 0);
+  --destructive: oklch(0.5 0.2 15);
+  --destructive-foreground: oklch(0.98 0.005 0);
+  --border: oklch(0.2 0.01 240);
+  --input: oklch(0.2 0.01 240);
+  --ring: oklch(0.7 0.01 240);
+  
+  /* Dark mode chart colors */
+  --chart-1: oklch(0.55 0.25 260);
+  --chart-2: oklch(0.7 0.18 165);
+  --chart-3: oklch(0.75 0.2 75);
+  --chart-4: oklch(0.6 0.25 300);
+  --chart-5: oklch(0.65 0.25 20);
+  
+  /* Dark mode educational colors */
+  --edu-blue: oklch(0.65 0.22 225);
+  --edu-blue-light: oklch(0.2 0.08 225);
+  --edu-green: oklch(0.6 0.18 135);
+  --edu-green-light: oklch(0.2 0.05 135);
+  --edu-orange: oklch(0.75 0.15 45);
+  --edu-orange-light: oklch(0.22 0.06 45);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  /* Improved focus styles */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}
+
+@layer utilities {
+  /* Educational theme utility classes */
+  .text-edu-blue {
+    color: var(--edu-blue);
+  }
+  
+  .bg-edu-blue {
+    background-color: var(--edu-blue);
+  }
+  
+  .bg-edu-blue-light {
+    background-color: var(--edu-blue-light);
+  }
+  
+  .border-edu-blue {
+    border-color: var(--edu-blue);
+  }
+  
+  .text-edu-green {
+    color: var(--edu-green);
+  }
+  
+  .bg-edu-green {
+    background-color: var(--edu-green);
+  }
+  
+  .bg-edu-green-light {
+    background-color: var(--edu-green-light);
+  }
+  
+  .border-edu-green {
+    border-color: var(--edu-green);
+  }
+  
+  .text-edu-orange {
+    color: var(--edu-orange);
+  }
+  
+  .bg-edu-orange {
+    background-color: var(--edu-orange);
+  }
+  
+  .bg-edu-orange-light {
+    background-color: var(--edu-orange-light);
+  }
+  
+  .border-edu-orange {
+    border-color: var(--edu-orange);
+  }
+  
+  /* Hover variants for educational colors */
+  .hover\:bg-edu-blue:hover {
+    background-color: var(--edu-blue);
+  }
+  
+  .hover\:bg-edu-green:hover {
+    background-color: var(--edu-green);
+  }
+  
+  .hover\:bg-edu-orange:hover {
+    background-color: var(--edu-orange);
+  }
+  
+  /* Focus variants for educational colors */
+  .focus\:ring-edu-blue:focus {
+    --tw-ring-color: var(--edu-blue);
+  }
+  
+  .focus\:ring-edu-green:focus {
+    --tw-ring-color: var(--edu-green);
+  }
+  
+  .focus\:ring-edu-orange:focus {
+    --tw-ring-color: var(--edu-orange);
+  }
+}
