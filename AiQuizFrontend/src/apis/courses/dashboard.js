@@ -1,4 +1,10 @@
-import AXIOS_INSTANCE from '../axios';
+import AXIOS_INSTANCE, { FOG_AXIOS_INSTANCE } from '../axios';
 
 export const getTotalStars = () => 
-    AXIOS_INSTANCE.get('/core/total-stars/');
+    FOG_AXIOS_INSTANCE.get('/total-stars');
+
+export const getDashboardInfo = () => 
+    FOG_AXIOS_INSTANCE.get('/dashboard-info');
+
+export const getQTableOverall = () => 
+    FOG_AXIOS_INSTANCE.get('/q-table/overall');

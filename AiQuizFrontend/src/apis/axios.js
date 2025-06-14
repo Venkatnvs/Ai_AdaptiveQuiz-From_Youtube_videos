@@ -8,7 +8,26 @@ const AXIOS_INSTANCE = axios.create({
     // withCredentials: true,
 });
 
+// For requests to the fog server (Flask)
+const FOG_AXIOS_INSTANCE = axios.create({
+    baseURL: "http://localhost:5000/",
+    // withCredentials: true,
+});
+
 AXIOS_INSTANCE.interceptors.request.use(
+    (config) => {
+        const token = Cookies.get(ACCESS_TOKEN);
+        if (token) {
+            config.headers["Authorization"] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+FOG_AXIOS_INSTANCE.interceptors.request.use(
     (config) => {
         const token = Cookies.get(ACCESS_TOKEN);
         if (token) {
@@ -61,3 +80,4 @@ AXIOS_INSTANCE.interceptors.response.use(
 );
 
 export default AXIOS_INSTANCE;
+export { FOG_AXIOS_INSTANCE }; // Use this for fog server requests

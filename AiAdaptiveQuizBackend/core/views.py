@@ -72,24 +72,55 @@ class SubmitQuizView(views.APIView):
 
     def post(self, request, course_id, video_id):
         user = request.user
-        session = QuizSession.objects.get(user=user, video__id=video_id, video__course__id=course_id, is_quiz_generated=True)
+        session = QuizSession.objects.get(
+            user=user, 
+            video__id=video_id, 
+            video__course__id=course_id, 
+            is_quiz_generated=True
+        )
         answers = request.data.get("answers", [])
         key = f"{session.user.id}_{session.video.course.id}"
-        old_state = str(agent.avg_level(key))[:4]
+        
         score = 0
+        states_and_actions = []  # Store state-action pairs for batch update
 
-        for answer in answers:
+        # First pass: collect all answers and calculate intermediate states
+        current_state = str(agent.avg_level(key))[:4]
+        
+        for i, answer in enumerate(answers):
             question = Question.objects.get(id=answer["question_id"], session=session)
             question.selected = str(answer["selected"])
             question.save()
 
             reward = 1 if question.selected == question.correct_answer else -1
-            next_state = str(agent.avg_level(key))[:4]
-            agent.update(key, old_state, question.difficulty, reward, next_state)
+            
+            # Store state-action-reward for this step
+            states_and_actions.append({
+                'state': current_state,
+                'action': question.difficulty,
+                'reward': reward
+            })
+            
+            # Temporarily update to get next state
+            agent.update(key, current_state, question.difficulty, reward, current_state)
+            current_state = str(agent.avg_level(key))[:4]
+            
             score += reward if reward > 0 else 0
 
-        session.score = (score / 10) * 100
-        session.stars = (score / 10) * 5
+        # Second pass: proper Q-learning updates with correct next states
+        for i, sa in enumerate(states_and_actions):
+            if i < len(states_and_actions) - 1:
+                # Use next question's state as next_state
+                next_state = str(agent.avg_level(key))[:4] if i == len(states_and_actions) - 1 else current_state
+            else:
+                # For last question, next_state is final state
+                next_state = current_state
+            
+            agent.update(key, sa['state'], sa['action'], sa['reward'], next_state)
+
+        # Update session with results
+        session.score = (score / len(answers)) * 100
+        session.stars = (score / len(answers)) * 5
         session.completed_at = timezone.now()
         session.is_quiz_submitted = True
         session.save()
@@ -119,6 +150,8 @@ class CourseOverviewView(views.APIView):
         total_stars = sum(s.stars for s in sessions)
         avg_score = sum(s.score for s in sessions) / max(len(sessions), 1)
         progress = course.progress_percentage(user)
+        
+        ai_level = get_ai_level(agent.avg_level(f"{user.id}_{course_id}"))
 
         return Response({
             "course_id": course_id,
@@ -129,7 +162,7 @@ class CourseOverviewView(views.APIView):
             "stats": {
                 "stars": total_stars,
                 "avgScore": round(avg_score, 2),
-                "aiLevel": get_ai_level(agent.avg_level(f"{user.id}_{course_id}"))
+                "aiLevel": ai_level
             },
             "progress": round(progress, 2),
             "completed_videos": len(completed_video_ids),
@@ -167,37 +200,97 @@ class DashboardInfoView(views.APIView):
         total_stars = QuizSession.objects.filter(user=user, stars__gt=0).aggregate(total_stars=Sum('stars'))['total_stars']
         quizzes_completed = QuizSession.objects.filter(user=user, is_quiz_submitted=True).count()
         average_score = QuizSession.objects.filter(user=user, is_quiz_submitted=True).aggregate(average_score=Avg('score'))['average_score']
-        adaptation_level = []
-        try:    
-            for course in Course.objects.filter(user=user):
-                adaptation_level.append(get_ai_level(agent.avg_level(f"{user.id}_{course.id}")))
-            adaptation_level = sum(adaptation_level) / len(adaptation_level)
-        except:
-            adaptation_level = "Beginner"
+
         started_courses = []
         for course in Course.objects.all():
             if course.is_course_started_by_user(user) and not course.is_course_completed_by_user(user):
-                started_courses.append(CourseSerializer(course).data)
+                started_courses.append(CourseSerializer(course, context={"request": request}).data)
         
         activities = []
-        for course in Course.objects.all():
+        activitie_id = 1
+        max_activities = 5
+        course_ids = []
+        courses = QuizSession.objects.filter(user=user).order_by("-updated_at")
+        adaptation_level = []
+        
+        try:
+            for course in courses:
+                if course.video.course.id not in course_ids:
+                    course_ids.append(course.video.course.id)
+                    adaptation_level.append(agent.avg_level(f"{user.id}_{course.video.course.id}"))
+                else:
+                    continue
+            adaptation_level = get_ai_level(sum(adaptation_level) / len(adaptation_level))
+        except Exception as e:
+            print(e)
+            adaptation_level = "Beginner"
+    
+        course_ids = []
+        for cs in courses:
+            if cs.video.course.id not in course_ids:
+                course_ids.append(cs.video.course.id)
+                course = Course.objects.get(id=cs.video.course.id)
+            else:
+                continue
+            if len(activities) >= max_activities:
+                break
             if course.is_course_completed_by_user(user):
                 activities.append({
-                    "id": course.id,
+                    "id": activitie_id,
                     "type": "course_completed",
                     "title": course.title,
                     "description": "Completed course",
-                    "date": course.completed_at.strftime("%Y-%m-%d")
+                    "date": QuizSession.objects.filter(user=user, video__course=course, completed_at__isnull=False, is_quiz_submitted=True).order_by("-updated_at").first().updated_at
                 })
+                activitie_id += 1
+            quiz_sessions = QuizSession.objects.filter(user=user, video__course=course, completed_at__isnull=False, is_quiz_submitted=True).order_by("-completed_at")
+            for quiz_session in quiz_sessions:
+                if len(activities) >= max_activities:
+                    break
+                if quiz_session.stars > 0:
+                    if len(activities) >= max_activities:
+                        break
+                    activities.append({
+                        "id": activitie_id,
+                        "type": "reward_received",
+                        "title": quiz_session.video.title + " - " + course.title,
+                        "description": "Received reward",
+                        "date": quiz_session.updated_at
+                    })
+                    activitie_id += 1
+                activities.append({
+                    "id": activitie_id,
+                    "type": "quiz_completed",
+                    "title": quiz_session.video.title + " - " + course.title,
+                    "description": "Completed quiz",
+                    "date": quiz_session.completed_at
+                })
+                activitie_id += 1
         
         res = {
             "stats": {
                 "quizzesCompleted": quizzes_completed,
-                "averageScore": round(average_score, 2),
+                "averageScore": round(average_score, 2) if average_score else 0,
                 "totalStars": total_stars,
                 "adaptationLevel": adaptation_level
             },
             "startedCourses": started_courses,
-            "activities": []
+            "activities": activities
         }
         return Response(res)
+    
+class QTableViewOverall(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        all_tables = []
+        for course in Course.objects.all():
+            q_table = agent.export_qtable(f"{user.id}_{course.id}")
+            if len(q_table) > 0:
+                all_tables.append({
+                    "course_id": course.id,
+                    "title": course.title,
+                    "q_table": q_table
+                })
+        return Response(all_tables)

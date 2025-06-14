@@ -21,7 +21,7 @@ export default function DashboardStats( { stats, isLoading } ) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
       <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <CardContent className="pt-6">
+        <CardContent className="pt-3">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Quizzes Completed</p>
@@ -34,14 +34,14 @@ export default function DashboardStats( { stats, isLoading } ) {
           <div className="mt-4">
             <div className="flex items-center text-sm text-green-600">
               <ArrowUp className="h-4 w-4 mr-1" />
-              <span>+12% this week</span>
+              <span>Increase this week</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <CardContent className="pt-6">
+        <CardContent className="pt-3">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Average Score</p>
@@ -54,14 +54,14 @@ export default function DashboardStats( { stats, isLoading } ) {
           <div className="mt-4">
             <div className="flex items-center text-sm text-green-600">
               <ArrowUp className="h-4 w-4 mr-1" />
-              <span>+5% improvement</span>
+              <span>Improvement</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <CardContent className="pt-6">
+        <CardContent className="pt-3">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Stars</p>
@@ -80,7 +80,7 @@ export default function DashboardStats( { stats, isLoading } ) {
       </Card>
 
       <Card className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <CardContent className="pt-6">
+        <CardContent className="pt-3">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">AI Adaptation Level</p>

@@ -49,6 +49,9 @@ const Header = () => {
               <Link to="/courses" className={`relative bg-gray-100 text-gray-900 px-3 py-1 rounded-full items-center ${pathname === '/courses' ? 'bg-gray-200' : ''}`}>
                 <span className='text-sm font-medium'>All Courses</span>
               </Link>
+              <Link to="/q-table" className={`relative bg-gray-100 text-gray-900 px-3 py-1 rounded-full items-center ${pathname === '/q-table' ? 'bg-gray-200' : ''}`}>
+                <span className='text-sm font-medium'>Q-Table</span>
+              </Link>
             </div>
           </div>
 

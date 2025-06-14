@@ -8,6 +8,7 @@ from .views import (
     VideoDetailView,
     TotalStarsView,
     DashboardInfoView,
+    QTableViewOverall,
 )
 
 urlpatterns = [
@@ -22,4 +23,6 @@ urlpatterns = [
     # Overall Dashboard
     path("total-stars/", TotalStarsView.as_view(), name="total-stars"),
     path("dashboard-info/", DashboardInfoView.as_view(), name="dashboard-info"),
+    path("q-table/overall/", QTableViewOverall.as_view(), name="q-table-overall"),
+    
 ]

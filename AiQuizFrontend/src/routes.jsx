@@ -3,6 +3,7 @@ import MainCoursesPage from "./pages/AllCourses/MainCoursesPage";
 import CourseDetail from "./pages/AllCourses/CourseDetail";
 import QuizPage from "./pages/AllCourses/QuizPage";
 import QuizAnalysisPage from "./pages/AllCourses/QuizAnalysisPage";
+import MainViewer from "./pages/QTableViewer/MainViewer";
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
     name: "quiz-analysis",
     path: "/courses/:courseId/videos/:videoId/quiz/analysis",
     element: QuizAnalysisPage,
+  },
+  {
+    name: "q-table",
+    path: "/q-table",
+    element: MainViewer,
   },
 ];
 

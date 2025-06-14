@@ -51,3 +51,11 @@ class QLearningAgent:
         self.load(key)
         vals = list(self.q_tables[key].values())
         return sum(vals)/len(vals) if vals else 0.0
+    
+    def export_qtable(self, key):
+        self.load(key)
+        table = self.q_tables.get(key, {})
+        return [
+            {"state": str(state), "action": action, "q_value": round(q, 4)}
+            for (state, action), q in table.items()
+        ]

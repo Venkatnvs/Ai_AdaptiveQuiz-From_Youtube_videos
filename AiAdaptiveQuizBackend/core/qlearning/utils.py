@@ -11,11 +11,11 @@ def get_adaptation_level(user_id, course_id):
         return 0.0
     
 def get_ai_level(level):
-    if level < 0.2: 
+    if level < 0.05:
         return "Beginner"
-    elif level < 0.4:
+    elif level < 0.15:
         return "Intermediate"
-    elif level < 0.6:
+    elif level < 0.25:
         return "Advanced"
     else:
         return "Expert"

@@ -1,61 +1,53 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PageContainer from '@/components/layout/pageContainer'
 import DashboardStats from './DashboardStats'
 import RecentActivity from './RecentActivity'
 import CourseCard from '../AllCourses/CourseCard'
 import { useNavigate } from 'react-router-dom'
+import { getDashboardInfo } from '@/apis/courses/dashboard'
 
 const MainDashboard = () => {
   const navigate = useNavigate()
-  const [stats] = useState({
-    quizzesCompleted: 10,
-    averageScore: 80,
-    totalStars: 5,
-    adaptationLevel: "Intermediate",
-  })
-  const [isLoading] = useState(false)
-  const [activities] = useState([
-    {
-      id: 1,
-      type: "quiz_completed",
-      title: "Quiz 1",
-      description: "Completed quiz 1",
-      date: "2021-01-01",
-    },
-    {
-      id: 2,
-      type: "video_processed",
-      title: "Video 1",
-      description: "Processed video 1", 
-      date: "2021-01-01",
-    },
-    {
-      id: 3,
-      type: "quiz_completed",
-      title: "Quiz 3",
-      description: "Completed quiz 3",
-      date: "2021-01-01",
-    },
-  ])
+  const [stats, setStats] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [activities, setActivities] = useState([])
+  const [startedCourses, setStartedCourses] = useState([])
+  const [error, setError] = useState(null)
 
-  const startedCourses = [
-    {
-      id: 1,
-      title: 'React for Beginners',
-      description: 'Learn the basics of React.js and build interactive UIs.',
-      videos: 12,
-      progress: 0.5,
-      started: true,
-    },
-    {
-      id: 3,
-      title: 'Algebra Essentials',
-      description: 'Master the fundamentals of algebra for all levels.',
-      videos: 10,
-      progress: 0.8,
-      started: true,
-    },
-  ]
+  useEffect(() => {
+    setIsLoading(true)
+    getDashboardInfo()
+      .then(res => {
+        setStats(res.data.stats)
+        setStartedCourses(res.data.startedCourses || [])
+        setActivities(res.data.activities || [])
+        setIsLoading(false)
+      })
+      .catch(() => {
+        setError('Failed to load dashboard. Please try again.')
+        setIsLoading(false)
+      })
+  }, [])
+
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 p-2 flex items-center justify-center min-h-[300px]">
+          <span className="text-lg text-muted-foreground">Loading dashboard...</span>
+        </div>
+      </PageContainer>
+    )
+  }
+
+  if (error) {
+    return (
+      <PageContainer>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 p-2 flex items-center justify-center min-h-[300px]">
+          <span className="text-lg text-red-500">{error}</span>
+        </div>
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer>
@@ -64,9 +56,19 @@ const MainDashboard = () => {
         <DashboardStats stats={stats} isLoading={isLoading} />
         <h2 className="text-xl font-semibold my-2">Courses You've Started</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {startedCourses.map(course => (
-            <CourseCard key={course.id} course={course} onClick={() => navigate(`/courses/${course.id}`)} />
-          ))}
+          {startedCourses.length === 0 ? (
+            <div className="col-span-full text-center text-muted-foreground py-12">No started courses found.</div>
+          ) : (
+            startedCourses.map(course => (
+              <CourseCard key={course.id} course={{
+                ...course,
+                videos: course.total_videos || 0,
+                progress: course.progress || 0,
+                started: course.is_course_started || false,
+                completed: course.is_course_completed || false,
+              }} onClick={() => navigate(`/courses/${course.id}`)} />
+            ))
+          )}
         </div>
         <div className="mt-6">
           <RecentActivity activities={activities} isLoading={isLoading} />
