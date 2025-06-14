@@ -6,10 +6,27 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = "__all__"
+        
+class QuestionSerializer2(serializers.ModelSerializer):
+    is_correct = serializers.ReadOnlyField()
+    class Meta:
+        model = Question
+        fields = ["id", "session", "text", "options", "correct_answer", "selected", "difficulty", "is_correct"]
+        
+
+class QuizSessionSubmitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizSession
+        fields = ["id", "status", "score", "stars", "adaptation_level", "is_quiz_generated", "is_quiz_submitted", "completed_at"]
 
 class QuizSessionSerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(many=True, read_only=True)
+    questions = QuestionSerializer2(many=True, read_only=True)
     status = serializers.ReadOnlyField()
+    is_quiz_submitted = serializers.ReadOnlyField()
+    score = serializers.ReadOnlyField()
+    stars = serializers.ReadOnlyField()
+    completed_at = serializers.ReadOnlyField()
+    
     class Meta:
         model = QuizSession
         fields = "__all__"

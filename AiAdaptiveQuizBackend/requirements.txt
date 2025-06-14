@@ -5,6 +5,7 @@ djangorestframework-simplejwt
 django-cors-headers
 validate_email
 drf-yasg
+google-genai
 pillow
 openai-whisper
 pytube

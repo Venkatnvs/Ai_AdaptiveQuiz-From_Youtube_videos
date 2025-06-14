@@ -14,7 +14,7 @@ const MainLandingPage = () => {
   };
 
   const handleSignUp = () => {
-    navigate("/signup", { replace: true });
+    navigate("/register", { replace: true });
   };
 
   useEffect(() => {

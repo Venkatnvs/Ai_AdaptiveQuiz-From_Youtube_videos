@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import PageContainer from '@/components/layout/pageContainer'
 import YouTube from 'react-youtube'
-import { getSpecificCourse, startVideoSession } from '@/apis/courses'
+import { getSpecificCourse, startVideoSession, generateQuiz } from '@/apis/courses'
 
 const statusIcon = {
   completed: '✅',
@@ -34,6 +34,7 @@ const CourseDetail = () => {
   const [videoProgress, setVideoProgress] = useState(0)
   const playerRef = useRef(null)
   const [videoLoading, setVideoLoading] = useState([null, true])
+  const [quizLoading, setQuizLoading] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -100,6 +101,23 @@ const CourseDetail = () => {
     playerRef.current = null
   }
 
+  const handleQuiz = () => {
+    setQuizLoading(true)
+    generateQuiz(courseId, currentVideo.id).then(res => {
+      console.log(res)
+      setQuizLoading(false)
+      navigate(`/courses/${courseId}/videos/${currentVideo.id}/quiz`)
+    })
+  }
+
+  const handleQuiz2 = (is_quiz_submitted) => {
+    if (is_quiz_submitted) {
+      navigate(`/courses/${courseId}/videos/${currentVideo.id}/quiz/analysis`)
+    } else {
+      navigate(`/courses/${courseId}/videos/${currentVideo.id}/quiz`)
+    }
+  }
+
   if (loading) {
     return (
       <PageContainer>
@@ -164,9 +182,9 @@ const CourseDetail = () => {
                       <div className="flex-1">
                         <div className="font-medium">{video.title}</div>
                       </div>
-                      {video.is_video_completed && <Badge className="ml-2" variant="success">Quiz Available</Badge>}
+                      {video.is_video_completed && <Badge className="ml-2" variant="success">{course.quizHistory.find(q => q.video === video.id)?.is_quiz_submitted ? 'Quiz Submitted' : 'Quiz Available'}</Badge>}
                     </div>
-                    <Button className="mt-2 sm:mt-0" size="sm" variant="outline" onClick={() => handleWatch(video)} disabled={videoLoading[0] === video.id && videoLoading[1]}>{videoLoading[0] === video.id && videoLoading[1] ? 'Loading...' : video?.is_video_started ? 'Continue watch' : 'Start'}</Button>
+                    <Button className="mt-2 sm:mt-0" size="sm" variant="outline" onClick={() => handleWatch(video)} disabled={videoLoading[0] === video.id && videoLoading[1]}>{videoLoading[0] === video.id && videoLoading[1] ? 'Loading...' : video?.is_video_started ? video?.is_video_completed ? 'Watch Again' : 'Continue watch' : 'Start'}</Button>
                   </Card>
                 ))
               )}
@@ -198,10 +216,22 @@ const CourseDetail = () => {
                         <span className="text-sm text-muted-foreground">{q.completed_at ? new Date(q.completed_at).toLocaleDateString() : ''}</span>
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Completed at: {q.completed_at ? new Date(q.completed_at).toLocaleDateString() : ''}
+                        {
+                          q.is_quiz_submitted ? (
+                            <span className="text-muted-foreground">
+                              Completed at: {q.completed_at ? new Date(q.completed_at).toLocaleDateString() : ''}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">
+                              Quiz Not Submitted
+                            </span>
+                          )
+                        }
                       </div>
-                    </div> 
-                    <div className="flex gap-3 items-center mt-3 sm:mt-0">
+                    </div>
+                    {
+                      q.is_quiz_submitted ? (
+                        <div className="flex gap-3 items-center mt-3 sm:mt-0">
                       <div className="flex items-center gap-1">
                         <Badge variant={q.score >= 80 ? "success" : q.score >= 60 ? "warning" : "destructive"}>
                           {q.score}%
@@ -212,7 +242,17 @@ const CourseDetail = () => {
                           {q.stars} <span className="text-yellow-400">⭐</span>
                         </Badge>
                       </div>
+                      <div className="flex items-center gap-1">
+                        <Button variant="outline" className="w-full" onClick={() => navigate(`/courses/${courseId}/videos/${q.video}/quiz/analysis`)}>View Analysis</Button>
+                      </div>
                     </div>
+                      ) : (
+                        <div className="flex gap-3 items-center mt-3 sm:mt-0">
+                          <Button variant="outline" className="w-full" onClick={() => navigate(`/courses/${courseId}/videos/${q.video}/quiz`)}>Start Quiz</Button>
+                        </div>
+                      )
+                    }
+                    
                   </Card>
                 ))
               )}
@@ -244,12 +284,25 @@ const CourseDetail = () => {
                     onStateChange={handleStateChange}
                   />
                 </div>
-                <ProgressBar progress={videoProgress} label="Video Progress" />
-                {showQuizBtn && (
-                  <Button className="w-full animate-fade-in" onClick={() => navigate(`/courses/${course.id}/videos/${currentVideo.id}/quiz`)}>
-                    Start Quiz
-                  </Button>
-                )}
+                {
+                  currentVideo.is_video_completed ? (
+                    <div className="flex flex-col gap-2">
+                      <Badge variant="success">Quiz Available</Badge>
+                      <Button className="w-full animate-fade-in" onClick={() => handleQuiz2(course.quizHistory.find(q => q.video === currentVideo.id)?.is_quiz_submitted)} disabled={quizLoading}>
+                        {course.quizHistory.find(q => q.video === currentVideo.id)?.is_quiz_submitted ? 'View Quiz Analysis' : 'Start Quiz'}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <ProgressBar progress={videoProgress} label="Video Progress" />
+                      { videoProgress >= 0.98   && (
+                        <Button className="w-full animate-fade-in" onClick={handleQuiz} disabled={quizLoading}>
+                          {quizLoading ? 'Generating Quiz...' : 'Generate Quiz'}
+                        </Button>
+                      )}
+                    </div>
+                  )
+                }
               </div>
             )}
             <DialogFooter className="mt-2 flex justify-end">

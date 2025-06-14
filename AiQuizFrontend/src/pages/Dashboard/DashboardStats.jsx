@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, TrendingUp, Flame, Bot, ArrowUp } from "lucide-react";
+import { CheckCircle, TrendingUp, Flame, Bot, ArrowUp, Star } from "lucide-react";
 
 export default function DashboardStats( { stats, isLoading } ) {
   if (isLoading) {
@@ -64,11 +64,11 @@ export default function DashboardStats( { stats, isLoading } ) {
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Learning Streak</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.learningStreak} days</p>
+              <p className="text-sm font-medium text-gray-600">Total Stars</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.totalStars || 0}</p>
             </div>
             <div className="bg-edu-orange-light p-3 rounded-lg">
-              <Flame className="h-6 w-6 text-orange-600" />
+              <Star className="h-6 w-6 text-yellow-800" />
             </div>
           </div>
           <div className="mt-4">

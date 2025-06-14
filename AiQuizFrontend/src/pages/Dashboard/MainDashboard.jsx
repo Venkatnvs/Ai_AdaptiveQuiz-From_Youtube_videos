@@ -10,7 +10,7 @@ const MainDashboard = () => {
   const [stats] = useState({
     quizzesCompleted: 10,
     averageScore: 80,
-    learningStreak: 5,
+    totalStars: 5,
     adaptationLevel: "Intermediate",
   })
   const [isLoading] = useState(false)
@@ -62,7 +62,7 @@ const MainDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 p-2">
         <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
         <DashboardStats stats={stats} isLoading={isLoading} />
-        <h2 className="text-xl font-semibold mt-4">Courses You've Started</h2>
+        <h2 className="text-xl font-semibold my-2">Courses You've Started</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {startedCourses.map(course => (
             <CourseCard key={course.id} course={course} onClick={() => navigate(`/courses/${course.id}`)} />
