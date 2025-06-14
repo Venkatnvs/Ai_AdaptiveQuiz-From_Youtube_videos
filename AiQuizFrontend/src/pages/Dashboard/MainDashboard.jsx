@@ -1,30 +1,78 @@
-import { logout } from '@/store/actions/authActions'
-import React from 'react'
-import { useDispatch } from 'react-redux'
-import { toast } from 'sonner'
+import React, { useState } from 'react'
+import PageContainer from '@/components/layout/pageContainer'
+import DashboardStats from './DashboardStats'
+import RecentActivity from './RecentActivity'
+import CourseCard from '../AllCourses/CourseCard'
+import { useNavigate } from 'react-router-dom'
 
 const MainDashboard = () => {
-  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [stats] = useState({
+    quizzesCompleted: 10,
+    averageScore: 80,
+    learningStreak: 5,
+    adaptationLevel: "Intermediate",
+  })
+  const [isLoading] = useState(false)
+  const [activities] = useState([
+    {
+      id: 1,
+      type: "quiz_completed",
+      title: "Quiz 1",
+      description: "Completed quiz 1",
+      date: "2021-01-01",
+    },
+    {
+      id: 2,
+      type: "video_processed",
+      title: "Video 1",
+      description: "Processed video 1", 
+      date: "2021-01-01",
+    },
+    {
+      id: 3,
+      type: "quiz_completed",
+      title: "Quiz 3",
+      description: "Completed quiz 3",
+      date: "2021-01-01",
+    },
+  ])
 
-  const handleLogout = () => {
-    dispatch(logout())
-    toast.success('Logged out successfully')
-  }
+  const startedCourses = [
+    {
+      id: 1,
+      title: 'React for Beginners',
+      description: 'Learn the basics of React.js and build interactive UIs.',
+      videos: 12,
+      progress: 0.5,
+      started: true,
+    },
+    {
+      id: 3,
+      title: 'Algebra Essentials',
+      description: 'Master the fundamentals of algebra for all levels.',
+      videos: 10,
+      progress: 0.8,
+      started: true,
+    },
+  ]
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold mb-4">Welcome to the AI Quiz Dashboard</h1>
-      <p className="text-lg text-gray-700 mb-8">Select an option from the sidebar to get started.</p>
-      <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
-        <p className="text-center text-gray-500">This is the main dashboard area.</p>
+    <PageContainer>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 p-2">
+        <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+        <DashboardStats stats={stats} isLoading={isLoading} />
+        <h2 className="text-xl font-semibold mt-4">Courses You've Started</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {startedCourses.map(course => (
+            <CourseCard key={course.id} course={course} onClick={() => navigate(`/courses/${course.id}`)} />
+          ))}
+        </div>
+        <div className="mt-6">
+          <RecentActivity activities={activities} isLoading={isLoading} />
+        </div>
       </div>
-      <button 
-        onClick={handleLogout}
-        className="mt-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-      >
-        Logout
-      </button>
-    </div>
+    </PageContainer>
   )
 }
 

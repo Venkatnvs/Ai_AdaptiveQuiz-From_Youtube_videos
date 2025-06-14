@@ -78,6 +78,7 @@ export const refreshToken = () => async (dispatch) => {
 export const fetchUser = () => async (dispatch) => {
     try {
         const response = await fetchUserApi();
+        console.log(response);
         Cookies.set(SET_USER_DATA, JSON.stringify(response.data), { expires: 30 });
         dispatch(setUser(response.data));
     } catch (error) {

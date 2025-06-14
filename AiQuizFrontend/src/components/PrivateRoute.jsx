@@ -1,11 +1,20 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
+import { fetchUser } from '@/store/actions/authActions';
+import { useEffect } from 'react';
 
 const PrivateRoute = () => {
-  const authTokens = useSelector(state => state.auth.authTokens);
+  const auth = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (auth?.authTokens?.access && auth?.authTokens?.refresh && !auth?.user?.email) {
+      dispatch(fetchUser());
+    }
+  }, []);
 
   return (
-    (authTokens?.access && authTokens?.refresh) ?  
+    (auth?.authTokens?.access && auth?.authTokens?.refresh) ?  
     (
         <Outlet />
     )
