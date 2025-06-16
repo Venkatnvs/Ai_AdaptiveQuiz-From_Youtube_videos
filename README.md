@@ -108,7 +108,8 @@ npm run dev
 
 ## 🔁Q Table
 
- ![image](https://github.com/user-attachments/assets/16334937-ea0e-4f39-824d-83336e5a9dae)
+![Screenshot 2025-06-16 190524](https://github.com/user-attachments/assets/4ac72814-f0b5-43b0-9294-2b4c8dfc1cfc)
+
 
 ## ☁️ Fog Node (Flask)
 
