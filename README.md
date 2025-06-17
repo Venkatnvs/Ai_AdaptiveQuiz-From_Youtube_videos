@@ -62,6 +62,9 @@ This AI-Driven Adaptive Assessment system combines Django (backend), React (fron
 
 ## 🧰 Django Backend
 
+![WhatsApp Image 2025-06-14 at 19 14 51_5ccf6242](https://github.com/user-attachments/assets/188dfbf6-60ea-4c20-860b-fe5260defcc5)
+![WhatsApp Image 2025-06-14 at 19 15 10_b6f18937](https://github.com/user-attachments/assets/4ba233dc-13ed-4e94-876e-812ff7b4951a)
+
 ### 🔧 Setup And Run
 
 ```bash
