@@ -9,6 +9,7 @@ This platform offers a personalized learning experience using **AI models**, **Q
 
 https://github.com/user-attachments/assets/8ee0d05e-c136-4aa6-915c-cccb44bc6ba8
 
+**Youtube Link**: [https://www.youtube.com/watch?v=juHuOA2Kk5g](https://www.youtube.com/watch?v=juHuOA2Kk5g)
 
 ---
 
