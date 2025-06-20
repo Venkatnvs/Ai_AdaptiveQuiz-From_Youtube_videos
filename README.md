@@ -183,4 +183,6 @@ python app.py
 ## 📬 Contact
 Made with ❤️ by N. Venkat Swaroop
 
+Email: venkatnvs2005@gmail.com
+
 👉 [GitHub](https://github.com/venkatnvs) | [LinkedIn](https://www.linkedin.com/in/n-venkat-swaroop/)
